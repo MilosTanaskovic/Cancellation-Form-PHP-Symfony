@@ -1,0 +1,63 @@
+{% extends "/index.html.twig" %}
+
+{% block title %} {{ ('domain.cancellation.title')|trans({}, 'seo') }} {% endblock %}
+{% block description %} {{ ('domain.cancellation.desc')|trans({}, 'seo') }} {% endblock %}
+
+{% block content %}
+
+    <section>
+        <div class="container">
+            <form>
+                <div class="form-content">
+                    <!-- Radio Button -->
+                    {% if form.vars.data.isImmediateAvailable %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.checkbox3) }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                        
+                        </div>
+                    {% endif %}
+                    <!-- End Radio Button -->
+                    <!-- Checkbox1 - Cancel Domain -->
+                    {% if %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.checkbox1) }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                        
+                        </div>
+                    {% endif %}
+                    <!-- End Checkbox1 - Cancel Domain -->
+                    <!-- Checkbox2 - Cancel Service -->
+                    {% if %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.checkbox2) }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                        
+                        </div>
+                    {% endif %}
+                    <!-- End Checkbox1 - Cancel Service -->
+                    <!-- Submmit Button -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {{ form_row(form.submit1) }}
+                        </div>
+                    </div>
+                    <!-- End Submmit Button -->
+                </div>
+            </form>
+        </div>
+    </section>
+
+{% endblock %}
