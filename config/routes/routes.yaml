@@ -1,0 +1,21 @@
+# This file is the entry point to configure your own HTTP routes.
+# Files in the routes/ subdirectory configure the routes for your dependencies.
+
+#index:
+#    path: /
+#    defaults: { _controller: '\Controller\CancellationController::begin' }
+
+# CancellationController
+
+cancellation_begin:
+  path: /cancellation/begin/{domainName}/{hash}
+  defaults: { _controller: '\Controller\CancellationController:beginCancellationAction'}
+    options:
+        utf8: true
+        
+cancellation_process:
+    path: /cancellation/process/{domainName}/{hash}
+    defaults: { _controller: '\Controller\CancellationController:cancelAction' }
+    methods: [POST]
+    options:
+        utf8: true
