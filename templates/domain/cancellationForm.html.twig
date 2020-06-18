@@ -7,56 +7,220 @@
 
     <section>
         <div class="container">
-            <form>
-                <div class="form-content">
-                    <!-- Radio Button -->
+           <div class="row">
+               {# {% for message in app.session.flashBag.get('cancel-success', []) %}
+                    <div class="alert alert-success">{{message|raw}}</div>
+                {% endfor %}#}
+      
+                {% if form is not null %}
                     {% if form.vars.data.isImmediateAvailable %}
+                        <h3 class="text-left pl15" style="display:{{ form.vars.data.immediate ? 'none':'block'}}">{{ ('Cancellation options for ')|trans|raw }} {{form.vars.data.domainName}}</h3>                                          
+                    {% else %}
+                        <h3 class="text-left pl15" style="display:{{ not form.vars.data.immediate ? 'none':'block'}}">{{ ('Cancellation options for ')|trans|raw }} {{form.vars.data.domainName}}</h3>
+                    {% endif %}
+                    
+                <div class="col-xs-12 col-md-8 col-lg-9">
+                    <form class="form-auth mbl" method="xxx" action="{{ xxxxxx }}" id="cancellationForm" autocomplete="off">
+                    <div class="form-content">
+                    {% for message in app.session.flashBag.get('cancel-error', []) %}
+                        <div class="alert alert-error">{{message|raw}}</div>
+                    {% endfor %}
+                    {{ form_errors(form) }}
+                    {{ form_row(form._token) }}
+                    <!-- Radi button  -->
+                        {% if form.vars.data.isImmediateAvailable %}
+                            <div class="row">
+                                <div class="col-sm-12 {#text-center#}">                                 
+                                    {{ form_row(form.checkbox3) }}
+                                </div>
+                            </div> 
+                        {% else %}
+                            <div class="row text-center">
+                                {{ form.vars.data.immediate ? '' : '' }}
+                                            {#immediate require#} {#normal required#}
+                            </div>
+                        {% endif %}
+                    <!-- End Radio Button --> 
+                    <span id="Cancelation">
+                    <!-- Cancel Domain -->
+                        
+                        {% if form.vars.data.isCancelDomainAvailable %}
+                            <div class="row immediate-dependat {{ form.vars.data.isCancelDomainAvailable(true)? 'immediate-cancel':''}} {{ form.vars.data.isCancelDomainAvailable(false) ? 'normal-cancel':''}}" style="display:{{form.vars.data.isCancelDomainAvailable(form.vars.data.immediate) ? 'block':'none'}}">
+                                <div class="col-sm-9 ds-flex">                           
+                                    {{ form_row(form.checkbox1, {'attr' : {'class': form.vars.data.isImplicit ? 'implicit' : '' } }) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if not form.vars.data.isImmediateAvailable %}
+                            <div class="row pl15 pt35 immediate-style immediate-dependat {{ form.vars.data.isCancelDomainAvailable(true)? '':'immediate-cancel'}} {{ form.vars.data.isCancelDomainAvailable(false)? '':'normal-cancel'}}" style="display:{{form.vars.data.isCancelDomainAvailable(form.vars.data.immediate) ? 'none':'block'}}">
+                                {{ form.vars.data.cancelDomain ? (('this.will.cancel.domain.%DOMAIN_NAME%')|trans({'%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw) : '' }}
+                            </div>                        
+                        {% endif %}
+                    <!-- End Cancel Domain -->    
+                    <!-- Cancel Service -->
+                        {% if form.vars.data.isCancelServiceAvailable %}
+                            <div class="row immediate-dependat {{ form.vars.data.isCancelServiceAvailable(true)? 'immediate-cancel':''}} {{ form.vars.data.isCancelServiceAvailable(false)? 'normal-cancel':''}}" style="display:{{form.vars.data.isCancelServiceAvailable(form.vars.data.immediate) ? 'block':'none'}}">
+                                <div class="col-sm-9 ds-flex">
+                                    {{ form_row(form.checkbox2, {'attr' : {'class': form.vars.data.isImplicit ? 'implicit' : '' } }) }}                            
+                                </div>
+                            </div>  
+                        {% endif %}
+                        {% if not form.vars.data.isImmediateAvailable %}
+                            <div class="row pl15 immediate-style immediate-dependat {{ form.vars.data.isCancelServiceAvailable(true)? '':'immediate-cancel'}} {{ form.vars.data.isCancelServiceAvailable(false)? '':'normal-cancel'}}" style="display:{{form.vars.data.isCancelServiceAvailable(form.vars.data.immediate) ? 'none':'block'}}">
+                                {{ form.vars.data.cancelService ? (('this.will.cancel.service.%SERVICE_NAME%')|trans({'%SERVICE_NAME%': form.vars.data.serviceName, '%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw) : '' }}                                                                                                                        {#(('service.is.alredy.cancel')|trans|raw)#}
+                            </div>
+                        {% endif %}
+                    <!-- End Cancel Service -->  
+                    </span>
+                    
+                    <!-- Description State Section - Mobile -->
+                    <div class="col-xs-12 fs14 hidden-md hidden-lg">                      
+                        <!-- Are you sure? -->
+                            <p class="checkbox-tick right-sure" style="display:{{  ( form.vars.data.immediate) or (form.vars.data.cancelDomain or form.vars.data.cancelService) ? 'block':'none'}}">
+                                {{ ('Are you sure?')|trans|raw}}                               
+                            </p>                             
+                        <!-- End -->
+                        <!-- 0 If Customer ticks to Immediate or rendered stand alone -->
+                            <p class="immediate-chosen immediate-chosen_style" style="display:{{  (form.vars.data.immediate) ? 'block':'none'}}">
+                                {{ ('special text when customer choice immediate cancellation')|trans|raw}} 
+                            </p>                            
+                        <!-- 0 end -->
+                        <!-- 1 If Customer ticks to Cancel Domain or/and Cancel Service -->                        
+                            <p class="domain-tick service-tick" style="display:{{ form.vars.data.cancelDomain or form.vars.data.cancelService ? 'block':'none'}}">
+                                {% if form.vars.data.isImplicit %}
+                                    {{ ('cancel.domian.implicit.inform')|trans|raw }}
+                                {% endif %}
+                            </p><br />                           
+                            <p class="domain-tick service-tick" style="display:{{ form.vars.data.cancelDomain or form.vars.data.cancelService ? 'block':'none'}}">
+                                {{ ('cancel.domian.inform')|trans({'%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw }}
+                                {#{{ form.vars.data.domainName }}#}
+                            </p>                             
+                        <!-- End 1 If Customer ticks to Cancel Domain -->
+                        
+                        <!-- 2 If Customer ticks to Cancel Service - multiDomain -->
+                            <p class="service-tick" style="display:{{  form.vars.data.cancelService ? 'block':'none'}}">                                                              
+                                {% if form.vars.data.multiDomain %}
+                                    
+                                    <!-- information that there are multi domain on that service -->
+                                    {{ ('cancel.service.inform.1')|trans|raw }}<br />
+                                    <span>
+                                        {% for domainName in form.vars.data.otherDomains %}
+                                            {{ domainName }}<br/>
+                                        {% endfor %}
+                                    </span> <br />
+                                    {{ ('cancel.service.inform.2')|trans|raw }}
+                                {% endif %}                                
+                            </p>
+                        <!-- End 2 If Customer ticks to Cancel Service -->
+                        <!-- Cancel Domain - multiDomain -->
+                            <p class="domain-tick" style="display:{{  form.vars.data.cancelDomain ? 'block':'none'}}">                                                              
+                                {% if form.vars.data.multiDomain %}                                
+                                    {{ ('cancel.domian.inform')|trans({'%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw }}                               
+                                {% endif %}                                
+                            </p>
+                        <!-- End -->
+                    </div>
+                    <!-- End Description State Section - Mobile -->
+                    <!-- Checkboxes - Reason for Dismissal -->
+                    <span id="Dismissal">
+                        <div class="row pt15 pbm">
+                            <h3 class="text-left pl15">{{ ('Reason for cancellation')|trans|raw }}</h3>
+                            <div class="col-md-12 grid">
+                                {{ form_row(form.checkbox4) }}
+                                {{ form_row(form.checkbox5) }}
+                                {{ form_row(form.checkbox6) }}
+
+                                {{ form_row(form.checkbox7) }}
+                                {{ form_row(form.checkbox8) }}
+                                {{ form_row(form.checkbox9) }}
+                            </div>
+                        </div>               
+                    </span>
+                    <!-- End Reason for Cancellation -->
+                    <!-- TextareaType - Convince for Stay -->
+                    <span id="ConvinceTextarea">
                         <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.checkbox3) }}
+                            <p class="text-left pl15">{{ ('What could have convinced you to stay?')|trans|raw }}</p>
+                            <div class="col-md-9">
+                                {{ form_row(form.convinceStay) }}
                             </div>
                         </div>
-                    {% else %}
-                        <div class="row">
-                        
-                        </div>
-                    {% endif %}
-                    <!-- End Radio Button -->
-                    <!-- Checkbox1 - Cancel Domain -->
-                    {% if %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.checkbox1) }}
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="row">
-                        
-                        </div>
-                    {% endif %}
-                    <!-- End Checkbox1 - Cancel Domain -->
-                    <!-- Checkbox2 - Cancel Service -->
-                    {% if %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.checkbox2) }}
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="row">
-                        
-                        </div>
-                    {% endif %}
-                    <!-- End Checkbox1 - Cancel Service -->
+                    </span>
+                    <!-- End TextareaType - Convince for Stay -->
                     <!-- Submmit Button -->
                     <div class="row">
-                        <div class="col-sm-6">
-                            {{ form_row(form.submit1) }}
+                        <div class="col-md-4 hidden-sm hidden-xs">
+                            {{ form_row(form.submmit1, {'attr': {'disabled': not form.vars.data.isSubmitAvailable(form.vars.data.immediate)} } ) }}
                         </div>
+                    </div> 
+
+                    <!-- End Sub -->
                     </div>
-                    <!-- End Submmit Button -->
+                    </form>
+                    {% else %}
+                        {{ ('domain or service are no longer available for cancelation')|trans|raw }}
+                    {% endif %}
                 </div>
-            </form>
+                {% if form is not null %}
+                <!-- Description State Section - Desktop-->
+                <div class="col-md-4 col-lg-3 fs14 hidden-sm hidden-xs">
+                    <div data-spy="affix" data-offset-top="230" class="step small-rsc affix-top">
+                        <!-- Are you sure? -->
+                            <p class="checkbox-tick right-sure" style="display:{{  ( form.vars.data.immediate) or (form.vars.data.cancelDomain or form.vars.data.cancelService) ? 'block':'none'}}">
+                                {{ ('Are you sure?')|trans|raw}}                               
+                            </p>                             
+                        <!-- End -->
+                        <!-- 0 If Customer ticks to Immediate or rendered stand alone -->
+                            <p class="immediate-chosen immediate-chosen_style" style="display:{{  (form.vars.data.immediate) ? 'block':'none'}}">
+                                {{ ('special text when customer choice immediate cancellation')|trans|raw}} 
+                            </p>                            
+                        <!-- 0 end -->
+                        <!-- 1 If Customer ticks to Cancel Domain or/and Cancel Service -->                        
+                            <p class="domain-tick service-tick" style="display:{{ form.vars.data.cancelDomain or form.vars.data.cancelService ? 'block':'none'}}">
+                                {% if form.vars.data.isImplicit %}
+                                    {{ ('cancel.domian.implicit.inform')|trans|raw }}
+                                {% endif %}
+                            </p><br />                           
+                            <p class="domain-tick service-tick" style="display:{{ form.vars.data.cancelDomain or form.vars.data.cancelService ? 'block':'none'}}">
+                                {{ ('cancel.domian.inform')|trans({'%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw }}
+                                {#{{ form.vars.data.domainName }}#}
+                            </p>                             
+                        <!-- End 1 If Customer ticks to Cancel Domain -->
+                        
+                        <!-- 2 If Customer ticks to Cancel Service - multiDomain -->
+                            <p class="service-tick" style="display:{{  form.vars.data.cancelService ? 'block':'none'}}">                                                              
+                                {% if form.vars.data.multiDomain %}
+                                    
+                                    <!-- information that there are multi domain on that service -->
+                                    {{ ('cancel.service.inform.1')|trans|raw }}<br />
+                                    <span>
+                                        {% for domainName in form.vars.data.otherDomains %}
+                                            {{ domainName }}<br/>
+                                        {% endfor %}
+                                    </span> <br />
+                                    {{ ('cancel.service.inform.2')|trans|raw }}
+                                {% endif %}                                
+                            </p>
+                        <!-- End 2 If Customer ticks to Cancel Service -->
+                        <!-- Cancel Domain - multiDomain -->
+                            <p class="domain-tick" style="display:{{  form.vars.data.cancelDomain ? 'block':'none'}}">                                                              
+                                {% if form.vars.data.multiDomain %}                                
+                                    {{ ('cancel.domian.inform')|trans({'%DOMAIN_NAME%': form.vars.data.domainName}, 'messages')|raw }}                               
+                                {% endif %}                                
+                            </p>
+                        <!-- End -->
+                    
+                    </div>
+                </div>
+                <!-- End Description State Section - Desktop -->
+                               
+                <div class="col-xs-12 col-md-8 col-lg-9 hidden-lg hidden-md">
+                    <div class="fixed-bottom-nav">
+                        {{ form_row(form.submmit2, {'attr': {'disabled': not form.vars.data.isSubmitAvailable(form.vars.data.immediate)} } ) }}
+                    </div>
+                </div>
+                 {% endif %}
+            </div>
         </div>
     </section>
 

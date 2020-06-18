@@ -1,0 +1,92 @@
+{% extends "/index.html.twig" %}
+
+{% block title %}{{'domains.cancellationResults.title'|trans({},'seo')}}{% endblock %}
+{% block description %}{{'domains.cancellationResults.desc'|trans({},'seo')}}{% endblock %}
+
+{% block content %}
+    <section>
+        {% if cancellationData is not null %}
+        <h1 class="text-center">{{'Result of cancellation'|trans({},'htags') }}</h1>
+        <div class="container">
+            <div class="row">
+                {#{% for message in app.session.flashBag.get('cancel-success', []) %}
+                    <div class="alert alert-success">{{message|raw}}</div>
+                {% endfor %}#}                
+            <!-- Result of Cancellation-->    
+                <!-- Domain -->
+                {% if cancellationData.cancelDomain %}
+                    <!-- Domain Termination -->
+                    {% if cancellationData.immediate %}
+                        <span>
+                            <h3 class="pt15"> {{ ('Domain terminated')|trans|raw }} </h3>
+                            <p> {{ ('domain.terminated.1.%DOMAIN%')|trans({'%DOMAIN%': cancellationData.domainName}, 'messages')|raw }} </p>
+                            <p> {{ ('domain.terminated.2.%EXPIRYDATE%')|trans({'%EXPIRYDATE%': cancellationData.expiryDate}, 'messages')|raw }} </p>                           
+                        </span>
+                    {% else %}                       
+                    <!-- Domain Cancellation - Normal -->
+                        <span>
+                            <h3 class="pt15"> {{ ('Domain cancelled')|trans|raw }} </h3>
+                            <p> {{ ('domain.cancelled.1.%DOMAIN%')|trans({'%DOMAIN%': cancellationData.domainName}, 'messages')|raw }} </p>
+                            <p> {{ ('domain.cancelled.2.%EXPIRYDATE%')|trans({'%EXPIRYDATE%': cancellationData.expiryDate}, 'messages')|raw }} </p>
+                            <p> {{ ('domain.cancelled.3')|trans({'%DOMAIN%': cancellationData.domainName}, 'messages')|raw }} </p>                           
+                        </span>
+                    {% endif %}
+                {% endif %}
+                
+                <!-- Hosting -->
+                {% if cancellationData.cancelService %}
+                    <!-- Service Termination -->
+                    {% if  cancellationData.immediate %}
+                        <span>
+                            <h3 class="pt15">{{ ('Web.hosting.terminated')|trans|raw }}</h3>
+                            <p> {{ ('Web.hosting.terminated.1.%HOSTING%.%DOMAIN%')|trans({'%HOSTING%': cancellationData.serviceName , '%DOMAIN%': cancellationData.domainName}, 'messages')|raw }} </p>
+                            <p> {{ ('Web.hosting.terminated.2')|trans|raw }} </p>  
+                            
+                           <!-- if multi-domain  -->
+                            <span>
+                                {% if  cancellationData.multiDomain %}
+                                    <span>
+                                        {{ ('Termination.multi-domain.1')|trans|raw }}
+                                        {% for domainName in cancellationData.otherDomains %}
+                                            <b>{{ domainName }}</b><br/>
+                                        {% endfor %}
+                                        {{ ('Termination.multi-domain.2')|trans|raw }}
+                                    </span>
+                                {% endif %}
+                            </span>
+                        <!-- end multi-domain  -->
+                        </span>
+                    <!-- Service Cancellation - Normal -->
+                    {% else %}
+                        <span>
+                            <h3 class="pt15">{{ ('Web.hosting.cancelled')|trans|raw }}</h3>
+                            <p> {{ ('Web.hosting.cancelled.1.%HOSTING%.%DOMAIN%')|trans({'%HOSTING%': cancellationData.serviceName , '%DOMAIN%': cancellationData.domainName}, 'messages')|raw }} </p>
+                            <p> {{ ('Web.hosting.cancelled.2')|trans|raw }} </p>  
+                            
+                            <!-- if multi-domain  -->
+                            <span>
+                                {% if  cancellationData.multiDomain %}
+                                    <span>
+                                        {{ ('Termination.multi-domain.1')|trans|raw }}
+                                        {% for domainName in cancellationData.otherDomains %}
+                                            <b>{{ domainName }}</b><br/>
+                                        {% endfor %}
+                                        {{ ('Cancellation.of.web.hosting.2')|trans|raw }}
+                                    </span>
+                                {% endif %}
+                            </span>
+                            <!-- end multi-domain  -->
+                            <p> {{ ('Web.hosting.cancelled.3.%DUEDATE%')|trans({'%DUEDATE%': cancellationData.dueDate}, 'messages')|raw }} </p>
+                            
+                        </span>
+                    {% endif %}
+                {% endif %}               
+            <!-- End Result of Cancellation -->               
+            </div>
+        </div>
+        {% else %}
+            <h1 class="text-center">{{'Cancellation request ignore'|trans({},'htags') }}</h1>
+            {{ ('cancellation form cannot be resubmited')|trans|raw }}
+        {% endif %}
+    </section>
+{% endblock %}

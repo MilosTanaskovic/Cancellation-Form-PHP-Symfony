@@ -17,6 +17,13 @@
 
 class CancellationController extends AbstractController {
     // put your code here
+     /**
+     * @var Encryption
+     */
+    private $encryption;
+    public function __construct(Encryption $encryption) {
+        $this->encryption = $encryption;
+    }
 
     public function beginCancellationAction($domainName, $hash){
 
@@ -30,7 +37,7 @@ class CancellationController extends AbstractController {
             'Terminated' => true,
         ];
 
-        $cancellationData = new CancellationData($domainName, $hash, $domain_status, $service_status);
+        $cancellationData = new CancellationData($domainName, $hash, $domain_status, $service_status, $serviceName, $multiDomain, $otherDomains, null, null);
         $cancellationView = null;
 
         if( $cancellationData->isCancelAvailable() ){
@@ -42,6 +49,51 @@ class CancellationController extends AbstractController {
     }
 
     public function cancelAction($domainName, $hash, Request $request){
+
+        // hardcode DataBase
+        $doman_status = [
+            'PendingSuspension' => true,
+            'Suspended' => true
+        ];
+        $service_status = [
+            'PendingTermination' => true,
+            'Terminated' => true,
+        ];
+
+        $cancellationData = new CancellationData($domainName, $hash, $domain_status, $service_status, $serviceName, $multiDomain, $otherDomains, $expiryDate, $dueDate);
+        //$cancellationView = null;
+        if( $cancellationData->isCancelAvailable() ){           
+      
+            $cancellationForm = $this->createForm(CancellationType::class, $cancellationData);
+            $cancellationForm->handleRequest($request);
+
+            if($cancellationForm->isSubmitted() ){
+                
+                if(!$cancellationForm->isValid()){
+                    return $this->render('domain/cancellationResults.html.twig', [
+                        'cancellationData' => null
+                    ]);
+                }
+               
+                if($status_update_result['result'] === 'success' ){
+                    $this->addFlash('cancel-success', $cancellationData->getTargetMessage());
+                }else {
+                    $this->addFlash('cancel-error', 'Error cancelling domain or service');
+                    return $this->redirectToRoute('cancellation_begin', ['domainName'=> $domainName, 'hash'=> $hash]);
+                }
+              
+            }else {
+
+                $this->addFlash('cancel-error', 'Form is not submited');
+                return $this->redirectToRoute('cancellation_begin', ['domainName'=> $domainName, 'hash'=> $hash]);
+            }
+
+        } else {
+             $this->addFlash('cancel-error', 'domain and/or service are not available for cancellation');
+        }
+        return $this->render('domain/cancellationResults.html.twig', [
+            'cancellationData' => $cancellationData
+        ]);
 
     }
 }
